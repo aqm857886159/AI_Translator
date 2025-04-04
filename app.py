@@ -345,36 +345,21 @@ def call_deepseek_api(prompt, template):
         logging.error(f"处理API响应时发生错误: {str(e)}", exc_info=True)
         raise
 
-def process_translation(text):
+def process_text(text):
     """处理翻译结果，清理格式"""
     if not text:
         return text
         
-    # 移除所有的@符号
-    text = text.replace('@', '')
-    
-    # 处理多余的空行
+    # 移除#和@符号
     lines = text.split('\n')
     processed_lines = []
-    prev_line_empty = False
     
     for line in lines:
-        # 检查当前行是否为空行
-        current_line_empty = not line.strip()
-        
-        # 如果当前行不是空行，或者前一行不是空行，则保留该行
-        if not current_line_empty or not prev_line_empty:
-            processed_lines.append(line)
-            
-        # 更新前一行的状态
-        prev_line_empty = current_line_empty
+        line = line.strip()
+        if line:
+            line = line.replace('#', '').replace('@', '').strip()
+        processed_lines.append(line)
     
-    # 移除开头和结尾的空行
-    while processed_lines and not processed_lines[0].strip():
-        processed_lines.pop(0)
-    while processed_lines and not processed_lines[-1].strip():
-        processed_lines.pop()
-        
     return '\n'.join(processed_lines)
 
 def translate_text_direct(text):
@@ -386,7 +371,7 @@ def translate_text_direct(text):
         user_prompt = f"请翻译以下英文文本：\n{text}"
         
         result = call_deepseek_api(user_prompt, DIRECT_TEMPLATE)
-        return process_translation(result)
+        return process_text(result)
     except Exception as e:
         logging.error(f"直接翻译时发生错误: {str(e)}")
         raise
@@ -410,7 +395,7 @@ def translate_text_literary(text, first_translation):
         """
         
         result = call_deepseek_api(user_prompt, LITERARY_TEMPLATE)
-        return process_translation(result)
+        return process_text(result)
     except Exception as e:
         logging.error(f"文学性翻译时发生错误: {str(e)}")
         raise
@@ -434,7 +419,7 @@ def translate_text_stylized(text, literary_translation):
         """
         
         result = call_deepseek_api(user_prompt, STYLIZED_TEMPLATE)
-        return process_translation(result)
+        return process_text(result)
     except Exception as e:
         logging.error(f"风格化翻译时发生错误: {str(e)}")
         raise
@@ -770,6 +755,111 @@ class OptimizedTranslator:
     def __del__(self):
         """清理资源"""
         self.session.close()
+
+class BatchTranslator:
+    """批量翻译处理器，用于优化翻译速度和格式"""
+    
+    def __init__(self, translator, batch_size=3):
+        self.translator = translator
+        self.batch_size = batch_size
+        self.cache = {}  # 用于存储已翻译的内容
+        
+    def _merge_paragraphs(self, paragraphs):
+        """合并段落，保持格式标记"""
+        merged = []
+        current_batch = []
+        
+        for para in paragraphs:
+            # 如果是标题，单独处理
+            if para.strip().startswith('#'):
+                if current_batch:
+                    merged.append('\n'.join(current_batch))
+                    current_batch = []
+                merged.append(para)
+                continue
+                
+            current_batch.append(para)
+            
+            # 当达到批量大小时合并
+            if len(current_batch) >= self.batch_size:
+                merged.append('\n'.join(current_batch))
+                current_batch = []
+        
+        # 处理剩余的段落
+        if current_batch:
+            merged.append('\n'.join(current_batch))
+            
+        return merged
+    
+    def _split_translation(self, merged_text, original_paragraphs):
+        """将合并后的翻译结果分割回原段落"""
+        # 使用原文作为分隔符来分割翻译结果
+        result = []
+        current_pos = 0
+        
+        for para in original_paragraphs:
+            if para.strip().startswith('#'):
+                # 标题直接添加
+                result.append(para)
+                continue
+                
+            # 在合并文本中查找当前段落
+            para_start = merged_text.find(para, current_pos)
+            if para_start != -1:
+                # 找到下一段的开始位置
+                next_para_start = merged_text.find('\n\n', para_start)
+                if next_para_start == -1:
+                    next_para_start = len(merged_text)
+                    
+                # 提取翻译后的段落
+                translated_para = merged_text[para_start:next_para_start].strip()
+                result.append(translated_para)
+                current_pos = next_para_start
+            else:
+                # 如果找不到原文，保持原样
+                result.append(para)
+                
+        return result
+    
+    def translate_batch(self, text):
+        """批量翻译文本"""
+        # 分割成段落
+        paragraphs = text.split('\n\n')
+        paragraphs = [p.strip() for p in paragraphs if p.strip()]
+        
+        # 合并段落
+        merged_paragraphs = self._merge_paragraphs(paragraphs)
+        
+        # 批量翻译
+        translated_paragraphs = []
+        for batch in merged_paragraphs:
+            # 检查缓存
+            if batch in self.cache:
+                translated_paragraphs.append(self.cache[batch])
+                continue
+                
+            # 翻译并缓存
+            translated = self.translator.translate_text(batch)
+            self.cache[batch] = translated
+            translated_paragraphs.append(translated)
+        
+        # 合并翻译结果
+        merged_translation = '\n\n'.join(translated_paragraphs)
+        
+        # 分割回原段落
+        final_translation = self._split_translation(merged_translation, paragraphs)
+        
+        return '\n\n'.join(final_translation)
+
+def translate_text(text, target_lang='zh'):
+    """翻译文本"""
+    try:
+        # 使用批量翻译器
+        batch_translator = BatchTranslator(translator)
+        return batch_translator.translate_batch(text)
+    except Exception as e:
+        logger.error(f"翻译失败: {str(e)}")
+        raise
 
 @app.route('/')
 def index():
