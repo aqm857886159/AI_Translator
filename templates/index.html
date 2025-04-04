@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档翻译工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>文档翻译工具</h1>
+            <p>支持PDF、Word、TXT和Markdown文件的翻译</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <form id="uploadForm">
+                    <div id="uploadArea" class="upload-area">
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="display: none;">
+                        <div class="upload-content">
+                            <div class="upload-icon">+</div>
+                            <div class="upload-text">
+                                <p>点击或拖拽文件到此处</p>
+                                <p class="file-name" id="file-name"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="uploadButton" disabled>开始翻译</button>
+                </form>
+            </div>
+
+            <div class="progress-section" style="display: none;">
+                <div class="progress-container">
+                    <progress id="progressBar" value="0" max="100"></progress>
+                    <p id="progressText">准备上传...</p>
+                </div>
+            </div>
+
+            <div id="resultContainer" class="result-section" style="display: none;">
+                <a id="downloadLink" class="download-button" target="_blank">下载翻译结果</a>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html> 

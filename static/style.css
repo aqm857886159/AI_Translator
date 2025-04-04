@@ -1,0 +1,243 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f7;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* 头部样式 */
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #1d1d1f;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: #86868b;
+    font-size: 1.1rem;
+}
+
+/* 上传区域样式 */
+.upload-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.upload-area {
+    border: 2px dashed #c7c7c7;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: #0071e3;
+    background-color: #f5f5f7;
+}
+
+.upload-area.highlight {
+    border-color: #0071e3;
+    background-color: #f5f5f7;
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #86868b;
+    transition: color 0.3s ease;
+}
+
+.upload-area:hover .upload-icon {
+    color: #0071e3;
+}
+
+.upload-text {
+    color: #86868b;
+}
+
+.upload-text p {
+    margin: 0.5rem 0;
+}
+
+.file-name {
+    color: #1d1d1f;
+    font-weight: 500;
+}
+
+/* 按钮样式 */
+button {
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+button:hover {
+    background-color: #0077ed;
+}
+
+button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
+/* 进度条样式 */
+.progress-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.progress-container {
+    text-align: center;
+}
+
+progress {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+progress::-webkit-progress-bar {
+    background-color: #f5f5f7;
+    border-radius: 4px;
+}
+
+progress::-webkit-progress-value {
+    background-color: #0071e3;
+    border-radius: 4px;
+}
+
+#progressText {
+    color: #86868b;
+}
+
+/* 结果区域样式 */
+.result-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.download-button {
+    display: inline-block;
+    background-color: #0071e3;
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.download-button:hover {
+    background-color: #0077ed;
+}
+
+/* 翻译显示区域样式 */
+.translation-section {
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    margin: 30px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.translation-section h3 {
+    margin: 0 0 20px 0;
+    color: #1d1d1f;
+}
+
+.translation-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.original-text, .translated-text {
+    background: #f5f5f7;
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 300px;
+}
+
+.original-text h4, .translated-text h4 {
+    margin: 0 0 15px 0;
+    color: #1d1d1f;
+    font-size: 1.1em;
+}
+
+.text-content {
+    font-size: 1em;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* 下载区域样式 */
+.download-section {
+    text-align: center;
+    margin: 30px 0;
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.download-section h3 {
+    margin: 0 0 20px 0;
+    color: #1d1d1f;
+}
+
+.download-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* 页脚样式 */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    color: #86868b;
+} 
